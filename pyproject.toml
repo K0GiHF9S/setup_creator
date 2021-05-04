@@ -5,6 +5,8 @@ description = ""
 authors = ["K0GiHF9S <kidoairakusyunkasyuutou@gmail.com>"]
 readme = "README.md"
 
+[tool.poetry.scripts]
+setup_creator = "setup_creator.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
