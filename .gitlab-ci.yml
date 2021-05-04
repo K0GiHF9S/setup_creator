@@ -25,6 +25,7 @@ test:
     stage: tests
     script:
         - poetry install
+        - poetry build
         - poetry run pytest --cov=setup_creator/ --cov-branch
         - poetry run coverage xml
     artifacts:
@@ -32,6 +33,8 @@ test:
             cobertura: coverage.xml
 
 deploy:
+    only:
+        - tags
     stage: deploy
     script:
         - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN} --build
