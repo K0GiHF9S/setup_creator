@@ -17,15 +17,21 @@ cache:
         - .venv
         - .cache/pip
 
+before_script:
+    - python -V
+    - pip install poetry
+
 test:
     stage: tests
     script:
-        - pip install poetry
         - poetry install
-        - poetry build
-        - poetry run pytest
+        - poetry run pytest --cov=setup_creator/ --cov-branch
+        - poetry run coverage xml
+    artifacts:
+        reports:
+            cobertura: coverage.xml
 
 deploy:
     stage: deploy
     script:
-        - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN}
+        - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN} --build
