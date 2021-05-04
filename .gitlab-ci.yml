@@ -26,10 +26,11 @@ test:
     script:
         - poetry install
         - poetry build
-        - poetry run pytest --cov=setup_creator/ --cov-branch
+        - poetry run pytest --cov=setup_creator/ --cov-branch --junitxml=report.xml
         - poetry run coverage xml
     artifacts:
         reports:
+            junit: report.xml
             cobertura: coverage.xml
 
 deploy:
