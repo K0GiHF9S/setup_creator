@@ -1,0 +1,31 @@
+image: python:3.9-slim
+
+stages:
+    - tests
+    - deploy
+
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+    key:
+        files:
+            - poetry.lock
+            - .gitlab-ci.yml
+        prefix: ${CI_JOB_NAME}
+    paths:
+        - .venv
+        - .cache/pip
+
+test:
+    stage: tests
+    script:
+        - pip install poetry
+        - poetry install
+        - poetry build
+        - poetry run pytest
+
+deploy:
+    stage: deploy
+    script:
+        - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN}
