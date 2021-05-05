@@ -1,7 +1,10 @@
 from setup_creator.setting import Setting
 
 
-def test_setting():
-    setting = Setting('test.toml')
+from pathlib import Path
+
+
+def test_setting(shared_datadir: Path):
+    setting = Setting(shared_datadir / "test.toml")
     print(setting)
     # assert setting.a == 1

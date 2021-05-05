@@ -1,4 +1,4 @@
-image: python:3.9-slim
+image: python:3.9
 
 stages:
   - fetch
@@ -26,6 +26,8 @@ fetch:
     - python -V
     - pip install poetry
     - poetry install
+  rules:
+    - when: always
 
 test:
   stage: tests
@@ -40,10 +42,27 @@ test:
     paths:
       - htmlcov/
 
+merged_test:
+  stage: tests
+  script:
+    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - git checkout "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - git merge --squash -v -
+    - git diff --stat --staged
+    - pip install poetry
+    - poetry install
+    - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      cobertura: coverage.xml
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+
 pages:
   stage: deploy
   needs: ["test"]
-  cache:
   script:
     - mv htmlcov/ public/
   artifacts:
