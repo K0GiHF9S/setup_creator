@@ -49,6 +49,11 @@ merged_test:
     - git diff --stat --staged
     - poetry install
     - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
+  artifacts:
+    when: always
+    reports:
+      junit: report.xml
+      cobertura: coverage.xml
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 
