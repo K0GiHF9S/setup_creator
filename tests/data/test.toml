@@ -1,0 +1,6 @@
+url = "https://hsautomn.mydns.jp/gitlab"
+
+[[git]]
+name = "apple"
+repo = "test/a"
+tag = "v0.1"

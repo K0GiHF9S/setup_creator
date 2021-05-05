@@ -7,7 +7,7 @@ stages:
 variables:
     PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
-cache:
+cache: &global_cache
     key:
         files:
             - poetry.lock
@@ -16,6 +16,7 @@ cache:
     paths:
         - .venv
         - .cache/pip
+    policy: pull
 
 before_script:
     - python -V
@@ -23,19 +24,35 @@ before_script:
 
 test:
     stage: tests
+    cache:
+        <<: *global_cache
+        policy: pull-push
     script:
         - poetry install
         - poetry build
-        - poetry run pytest --cov=setup_creator/ --cov-branch --junitxml=report.xml
-        - poetry run coverage xml
+        - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
     artifacts:
         reports:
             junit: report.xml
             cobertura: coverage.xml
+        paths:
+            - htmlcov/
+
+pages:
+    stage: deploy
+    needs: ["test"]
+    script:
+        - mv htmlcov/ public/
+    artifacts:
+        paths:
+            - public/
+    rules:
+        - if: '$CI_COMMIT_REF_NAME == "master"'
 
 deploy:
-    only:
-        - tags
     stage: deploy
+    needs: ["test"]
     script:
         - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN} --build
+    rules:
+        - if: $CI_COMMIT_TAG
