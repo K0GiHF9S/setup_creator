@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from dataclasses import InitVar
 from typing import Optional
+from typing import Union
+from pathlib import Path
 
 
 @dataclass(frozen=True)
@@ -10,12 +12,15 @@ class GitSetting:
     tag: str
 
 
+FILETYPE = Union[str, Path]
+
+
 @dataclass
 class Setting:
-    filename: InitVar[str]
+    filename: InitVar[FILETYPE]
     gits: Optional[list[GitSetting]] = None
 
-    def __post_init__(self, filename: str):
+    def __post_init__(self, filename: FILETYPE):
         import toml
         data = toml.load(filename)
         if isinstance(data.get('git'), list):
