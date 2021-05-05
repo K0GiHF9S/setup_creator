@@ -12,8 +12,6 @@ cache: &global_cache
   key:
     files:
       - poetry.lock
-      - .gitlab-ci.yml
-    prefix: ${CI_JOB_NAME}
   paths:
     - .venv
     - .cache/pip
