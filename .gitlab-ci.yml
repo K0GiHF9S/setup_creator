@@ -1,6 +1,7 @@
 image: python:3.9-slim
 
 stages:
+  - fetch
   - tests
   - deploy
 
@@ -18,20 +19,23 @@ cache: &global_cache
     - .cache/pip
   policy: pull
 
-before_script:
-  - python -V
-  - pip install poetry
-
-test:
-  stage: tests
+fetch:
+  stage: fetch
   cache:
     <<: *global_cache
     policy: pull-push
   script:
+    - python -V
+    - pip install poetry
     - poetry install
-    - poetry build
+
+test:
+  stage: tests
+  script:
+    - pip install poetry
     - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
   artifacts:
+    when: always
     reports:
       junit: report.xml
       cobertura: coverage.xml
@@ -41,6 +45,7 @@ test:
 pages:
   stage: deploy
   needs: ["test"]
+  cache:
   script:
     - mv htmlcov/ public/
   artifacts:
@@ -52,8 +57,8 @@ pages:
 
 deploy:
   stage: deploy
-  needs: ["test"]
   script:
+    - pip install poetry
     - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN} --build
   rules:
     - if: $CI_COMMIT_TAG
