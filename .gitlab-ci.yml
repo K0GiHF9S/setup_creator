@@ -32,6 +32,7 @@ fetch:
 test:
   stage: tests
   script:
+    - pip install poetry
     - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
   artifacts:
     when: always
@@ -44,9 +45,11 @@ test:
 merged_test:
   stage: tests
   script:
+    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
     - git checkout "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
     - git merge --squash -v -
     - git diff --stat --staged
+    - pip install poetry
     - poetry install
     - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
   artifacts:
@@ -72,6 +75,7 @@ pages:
 deploy:
   stage: deploy
   script:
+    - pip install poetry
     - poetry publish -r gitlab -u gitlab-ci-token -p ${CI_JOB_TOKEN} --build
   rules:
     - if: $CI_COMMIT_TAG
