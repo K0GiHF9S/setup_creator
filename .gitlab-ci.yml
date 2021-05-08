@@ -74,7 +74,7 @@ sonarqube:
     paths:
       - .sonar/cache
   script:
-    - sonar-scanner -Dsonar.projectKey=${SONAR_KEY} -Dsonar.qualitygate.wait=true
+    - sonar-scanner -X -Dsonar.branch.name="${CI_COMMIT_REF_NAME}"
   allow_failure: true
   rules:
     - if: $CI_COMMIT_REF_NAME == "master"
