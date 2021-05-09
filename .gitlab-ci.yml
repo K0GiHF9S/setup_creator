@@ -1,4 +1,6 @@
-image: python:3.9
+default:
+  image: python:3.9
+  interruptible: true
 
 stages:
   - fetch
@@ -7,6 +9,30 @@ stages:
 
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+.sonarqube:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: ${CI_PROJECT_DIR}/.sonar
+    GIT_DEPTH: 0
+  cache:
+    key: ${CI_JOB_NAME}
+    paths:
+      - .sonar/cache
+  allow_failure: true
+
+.merge:
+  before_script:
+    - git config --global user.email "${GIT_USER_EMAIL}"
+    - git config --global user.name "${GIT_USER_NAME}"
+    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - git checkout "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+    - git merge --squash -v -
+    - git diff --stat --staged
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 
 cache: &global_cache
   key:
@@ -33,7 +59,7 @@ test:
   stage: tests
   script:
     - pip install poetry
-    - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
+    - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html --cov-report=term
   artifacts:
     when: always
     reports:
@@ -41,45 +67,47 @@ test:
       cobertura: coverage.xml
     paths:
       - htmlcov/
+      - report.xml
+      - coverage.xml
 
 merged_test:
   stage: tests
+  extends: .merge
   script:
-    - git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - git checkout "origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
-    - git merge --squash -v -
-    - git diff --stat --staged
     - pip install poetry
     - poetry install
-    - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html
+    - poetry run pytest --cov --html=htmlcov/results.html --self-contained-html --junitxml=report.xml --cov-report=xml --cov-report=html --cov-report=term
   artifacts:
     when: always
     reports:
       junit: report.xml
       cobertura: coverage.xml
-  rules:
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    paths:
+      - report.xml
+      - coverage.xml
 
 sonarqube:
-  stage: tests
-  needs: []
-  image:
-    name: sonarsource/sonar-scanner-cli:latest
-    entrypoint: [""]
-  variables:
-    SONAR_USER_HOME: ${CI_PROJECT_DIR}/.sonar
-    GIT_DEPTH: 0
-  cache:
-    key: ${CI_JOB_NAME}
-    paths:
-      - .sonar/cache
+  stage: deploy
+  needs: ["test"]
+  extends: .sonarqube
   script:
+    - sed -i "s@<source>$(pwd)@<source>.@g" coverage.xml
     - sonar-scanner -Dsonar.branch.name="${CI_COMMIT_REF_NAME}"
-  allow_failure: true
+  when: always
+
+merged_sonarqube:
+  stage: deploy
+  needs: ["merged_test"]
+  extends: .sonarqube
+  script:
+    - sed -i "s@<source>$(pwd)@<source>.@g" coverage.xml
+    - >-
+      sonar-scanner
+      -Dsonar.pullrequest.key="${CI_MERGE_REQUEST_IID}"
+      -Dsonar.pullrequest.branch="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+      -Dsonar.pullrequest.base="${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
   rules:
-    - if: $CI_COMMIT_REF_NAME == "master"
-      when: always
-    - if: $CI_COMMIT_REF_NAME == "develop"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
       when: always
 
 pages:
