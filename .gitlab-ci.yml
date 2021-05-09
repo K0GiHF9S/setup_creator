@@ -92,7 +92,10 @@ sonarqube:
   extends: .sonarqube
   script:
     - sed -i "s@<source>$(pwd)@<source>.@g" coverage.xml
-    - sonar-scanner -Dsonar.branch.name="${CI_COMMIT_REF_NAME}"
+    - >-
+        sonar-scanner
+        -Dsonar.branch.name="${CI_COMMIT_REF_NAME}"
+        -Dsonar.projectVersion="$(git describe --tags)"
   when: always
 
 merged_sonarqube:
@@ -102,10 +105,11 @@ merged_sonarqube:
   script:
     - sed -i "s@<source>$(pwd)@<source>.@g" coverage.xml
     - >-
-      sonar-scanner
-      -Dsonar.pullrequest.key="${CI_MERGE_REQUEST_IID}"
-      -Dsonar.pullrequest.branch="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
-      -Dsonar.pullrequest.base="${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+        sonar-scanner
+        -Dsonar.pullrequest.key="${CI_MERGE_REQUEST_IID}"
+        -Dsonar.pullrequest.branch="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}"
+        -Dsonar.pullrequest.base="${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}"
+        -Dsonar.projectVersion="$(git describe --tags)"
   rules:
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
       when: always
