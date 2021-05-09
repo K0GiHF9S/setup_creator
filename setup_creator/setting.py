@@ -14,7 +14,6 @@ class GitSetting:
 
 FILETYPE = Union[str, Path]
 
-
 @dataclass
 class Setting:
     filename: InitVar[FILETYPE]
