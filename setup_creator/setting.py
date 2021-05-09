@@ -26,4 +26,3 @@ class Setting:
         if isinstance(data.get('git'), list):
             self.gits = [GitSetting(**d) for d in data['git']]
         # object.__setattr__(self, 'surface', node.surface)
-        pass

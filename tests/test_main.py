@@ -21,5 +21,4 @@ def test_no_setting():
 
 
 def test_setting(shared_datadir : Path):
-    args = parse_args(f'-s {shared_datadir / "test.toml"}'.split())
-    pass
+    parse_args(f'-s {shared_datadir / "test.toml"}'.split())
