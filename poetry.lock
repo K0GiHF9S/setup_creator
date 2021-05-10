@@ -63,6 +63,21 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "msl-loadlib"
+version = "0.8.0"
+description = "Load a shared library (and access a 32-bit library from 64-bit Python)"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+all = ["comtypes", "py4j", "pythonnet"]
+clr = ["pythonnet"]
+com = ["comtypes"]
+java = ["py4j"]
+tests = ["comtypes", "numpy", "pathlib", "py4j", "pytest (>=4.4)", "pytest-cov", "pythonnet"]
+
+[[package]]
 name = "packaging"
 version = "20.9"
 description = "Core utilities for Python packages"
@@ -189,7 +204,7 @@ python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "1d472278cc6a9f403e728eb8fbeaeae00531296ac854d62b7d0ffcf568f262e9"
+content-hash = "dd8c4124b2f8fc2f8842476e921ce35c52a5fff57ea23751bc0dfdf80828caa9"
 
 [metadata.files]
 atomicwrites = [
@@ -265,6 +280,13 @@ coverage = [
 iniconfig = [
     {file = "iniconfig-1.1.1-py2.py3-none-any.whl", hash = "sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3"},
     {file = "iniconfig-1.1.1.tar.gz", hash = "sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32"},
+]
+msl-loadlib = [
+    {file = "msl-loadlib-0.8.0.tar.gz", hash = "sha256:d8da144578813ed34ccee2dfc63293a9c27bff456c7646fc789524d4fd1154f7"},
+    {file = "msl_loadlib-0.8.0-py2.py3-none-manylinux1_i686.whl", hash = "sha256:8d0a050b4a11ecfc7ee997fc4ee787e3991c239cd38973eb9a2d21b73e3be3e3"},
+    {file = "msl_loadlib-0.8.0-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:14cdd65e2682715d8d51b8fd9870340834a646065775885f3f4dedd909c2c6c9"},
+    {file = "msl_loadlib-0.8.0-py2.py3-none-win32.whl", hash = "sha256:898265a4d73d58593e79a379123cd1bf972633530fcc09c9b27a5f74a8508489"},
+    {file = "msl_loadlib-0.8.0-py2.py3-none-win_amd64.whl", hash = "sha256:db918de97cd47040149223eed0b6c050705021e0735ab74ab0bb419e9acc0042"},
 ]
 packaging = [
     {file = "packaging-20.9-py2.py3-none-any.whl", hash = "sha256:67714da7f7bc052e064859c05c595155bd1ee9f69f76557e21f051443c20947a"},

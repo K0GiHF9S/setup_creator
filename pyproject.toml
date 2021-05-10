@@ -11,6 +11,7 @@ setup_creator = "setup_creator.__main__:main"
 [tool.poetry.dependencies]
 python = "^3.9"
 toml = "^0.10.2"
+msl-loadlib = "^0.8.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
