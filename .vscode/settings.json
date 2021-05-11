@@ -1,4 +1,15 @@
 {
-    "pythonTestExplorer.testFramework": "pytest",
     "python.pythonPath": ".venv\\Scripts\\python.exe",
+    "python.languageServer": "Pylance",
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnSaveMode": "file",
+    "[python]": {
+        "editor.formatOnSave": true
+    },
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "python.testing.pytestEnabled": true,
 }
