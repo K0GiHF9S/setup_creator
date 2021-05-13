@@ -1,12 +1,14 @@
 {
     "python.pythonPath": ".venv\\Scripts\\python.exe",
     "python.languageServer": "Pylance",
+    "python.linting.enabled": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
-    "editor.formatOnSaveMode": "file",
     "[python]": {
-        "editor.formatOnSave": true
+        "editor.formatOnSaveMode": "file",
+        "editor.formatOnType": true,
+        "editor.formatOnSave": true,
     },
     "editor.codeActionsOnSave": {
         "source.organizeImports": true
